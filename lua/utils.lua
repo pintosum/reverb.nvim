@@ -1,5 +1,7 @@
 local M = {}
+M.Pids = {}
 local uv = vim.uv
+
 
 local function finished_playing(code)
     RUNNING_PROCESSES = RUNNING_PROCESSES -1
@@ -23,6 +25,7 @@ M.paplay_play_sound = function(path, human_volume)
     if handle == nil then
         print("reverb.nvim: Could not spawn paplay")
     end
+    table.insert(M.Pids, pid)
 end
 
 -- Play a sound using pwplay
@@ -31,7 +34,9 @@ M.pw_play_play_sound = function(path, human_volume)
     local handle, pid = uv.spawn('pw-play', { args = { path, '--volume', tostring(volume) } }, finished_playing)
     if handle == nil then
         print("reverb.nvim: Could not spawn pw-play")
+        return
     end
+    table.insert(M.Pids, pid)
 end
 
 -- Play a sound using mpv
@@ -44,6 +49,7 @@ M.mpv_play_sound = function(path, human_volume)
     if handle == nil then
         print("reverb.nvim: Could not spawn mpv")
     end
+    table.insert(M.Pids, pid)
 end
 
 -- Good old path exists function
